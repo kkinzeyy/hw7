@@ -1,0 +1,17 @@
+.display-4,
+.lead {
+  color: white;
+  text-align: center;
+}
+
+body {
+  background-color: rgb(0, 71, 0);
+  color: white;
+  text-align: center;
+}
+.form-group,
+.input {
+  background-color: rgb(0, 71, 0);
+  color: white;
+  text-align: center;
+}

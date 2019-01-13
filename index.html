@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>traintime</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+      integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+      integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+
+  <body>
+    <div class="jumbotron jumbotron-fluid bg-dark">
+      <div class="container">
+        <h1 class="display-4">Train Times</h1>
+        <p class="lead">A train schedule</p>
+      </div>
+    </div>
+
+    <h3 class="m-3">Current Train Schedule</h3>
+    <br />
+
+    <table class="table table-dark">
+      <thead>
+        <tr>
+          <th scope="col">train name</th>
+          <th scope="col">destination</th>
+          <th scope="col">frequency</th>
+          <th scope="col">next arrival</th>
+          <th scope="col">minutes away</th>
+        </tr>
+      </thead>
+      <tbody id="currentSchedule"></tbody>
+    </table>
+
+    <h3 class="m-3">Add Train</h3>
+    <br />
+
+    <div class="input">
+      <form>
+        <div class="form-group">
+          <label for="formGroupExampleInput">Train Name</label>
+          <input
+            type="text"
+            class="form-control"
+            id="name"
+            placeholder="Example input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="formGroupExampleInput2">Destination</label>
+          <input
+            type="text"
+            class="form-control"
+            id="destination"
+            placeholder="Another input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="formGroupExampleInput">First Train Time</label>
+          <input
+            type="text"
+            class="form-control"
+            id="start"
+            placeholder="Example input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="formGroupExampleInput">Frequency</label>
+          <input
+            type="text"
+            class="form-control"
+            id="frequency"
+            placeholder="Example input"
+          />
+        </div>
+      </form>
+      <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/5.7.3/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyD4b5S0p2Ff2uNmOLlZG9aTgMGkNz4Apd0",
+        authDomain: "train-homework-eab8f.firebaseapp.com",
+        databaseURL: "https://train-homework-eab8f.firebaseio.com",
+        projectId: "train-homework-eab8f",
+        storageBucket: "train-homework-eab8f.appspot.com",
+        messagingSenderId: "1080365755767"
+      };
+      firebase.initializeApp(config);
+
+      let database = firebase.database();
+
+      let name = "";
+      let destination = "";
+      let frequency = 0;
+      let start = 0;
+      let minAway = 0;
+
+      $("#submit").on("click", function(event) {
+        event.preventDefault();
+
+        name = $("#name").val();
+        destination = $("#destination").val();
+        frequency = $("#frequency").val();
+        start = $("#start").val();
+
+        database.ref().push({
+          name: name,
+          destination: destination,
+          frequency: frequency,
+          start: start
+        });
+      });
+
+      database.ref().on("child_added", function(snap) {
+        let next = moment().diff(moment(snap.val().start), "next");
+        console.log(snap.val().name);
+        console.log(snap.val().destination);
+        console.log(snap.val().frequency);
+        console.log(snap.val().next);
+        $("#currentSchedule").append(`
+                    <tr>
+                        <th scope="row">${snap.val().name}</th>
+                        <td>${snap.val().destination}</td>
+                        <td>${snap.val().frequency}</td>
+                        <td>${snap.val().minAway}</td>
+                        <td>${snap.val().rate}</td>
+
+                    </tr>
+              `);
+      });
+    </script>
+  </body>
+</html>
